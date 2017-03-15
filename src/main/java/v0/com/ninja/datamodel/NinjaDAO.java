@@ -27,7 +27,6 @@ public class NinjaDAO {
 		try {
 					
 			Query query = pm.newQuery(Speaker.class,"name =='"+name+"'");
-			logger.info("******** **  new wish query *********** "+query);
 			List<Speaker> spList = (List<Speaker>) query.execute();
 			logger.info("step list  *********** "+spList);
 
