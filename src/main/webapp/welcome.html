@@ -1,0 +1,121 @@
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+     <!--Import materialize.css-->
+     <link type="text/css" rel="stylesheet" href="materialize/css/materialize.min.css"  media="screen,projection"/>
+
+     <!--Let browser know website is optimized for mobile-->
+     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+     <script type="text/javascript" src="materialize/js/materialize.min.js"></script>
+        <script type="text/javascript" src="aaf_sdk_min.js"></script>
+
+<style>
+.forceMargin{
+  margin:0 0 15px 0 !important;
+}
+#load{
+  margin-top:150px;
+}
+#connect{
+    margin-top:94px;
+}
+</style>
+</head>
+<body>
+<center><h6 class="card-panel teal lighten-1 white-text" style="margin-top:0">Slack to AWW Integrator</h6></center>
+<div class="row"><div class="col s12 m5"><center><h5 id="user_name_display"class="card-panel white lighten-1 black-text"> Hi, User</h5></center></div></div>
+
+<div id="load" style="display:none">
+
+  <div class="progress">
+       <div class="indeterminate"></div>
+   </div>
+<p><center>Please wait, loading</p>
+</center>
+</div>
+
+<div id="connect">
+  <center><a id="slack_connect" class="waves-effect waves-light btn-large centered">Connect</a></center>
+  <p><center>Click to connect, we will redirect to verify your slack account and aww account</p>
+</div> 
+
+<script>
+var app = AAFClient.init();
+var userDetails = null;
+app.on( 'registered', function ( data ) {
+userDetails= data.user;
+if(userDetails == null){
+	userDetails ={};
+	userDetails.firstName = "Raghavan";
+	userDetails.login = "raghavan.ramanujam@a-cti.com";
+}
+document.getElementById("user_name_display").innerHTML="Hi, "+userDetails.firstName;
+$.ajax({
+	  type : 'GET',
+	  url : 'https://fullintegration-testing.appspot.com/full/integrations/getWorkflowStatus/'+userDetails.login+'/'+true,
+	  success : function(response) {
+		  if(response.status && response.moduleStatus){
+	    	  location.replace("slack.jsp?userMail="+userDetails.firstName);
+	      }
+	  }
+
+}); 
+});
+ 
+  $("#slack_connect").on("click",function(){
+    $("#connect").css("display","none");
+  $("#load").css("display","block");
+
+  $("#myMessage").css("display","block");
+  checkUserExist(userDetails.login);
+   
+});  
+var pagestatus = false;
+var counter=0;
+
+var url="";
+function checkUserExist(mailId){
+$.ajax({
+  type : 'GET',
+  url : 'https://fullintegration-testing.appspot.com/full/integrations/getWorkflowStatus/'+mailId+'/'+pagestatus,
+  success : function(response) {
+      if(response.status && response.moduleStatus){
+    	  location.replace("slack.jsp?userMail="+userDetails.firstName);
+      }
+      else if(response.status){
+    	  var awwId=response.listenerWorkIntegration.id;
+    	  var awwIntId=response.listenerWorkIntegration.integrationId;
+    	  var slackId=response.eventWorkIntegration.id;
+    	  var slackIntId=response.eventWorkIntegration.integrationId;
+    	  var redirect_url="?awwId="+awwId+"&awwIntid="+awwIntId+"&slackId="+slackId+"&slackIntId="+slackIntId+"&userMail="+mailId;
+    	
+       location.replace("selectStream.jsp"+redirect_url);
+    }
+    else{
+    	var awwId=response.listenerWorkIntegration.id;
+  	  var awwIntId=response.listenerWorkIntegration.integrationId;
+  	  var slackId=response.eventWorkIntegration.id;
+  	  var slackIntId=response.eventWorkIntegration.integrationId;
+  	  var redirect_url="?awwId="+awwId+"&awwIntid="+awwIntId+"&slackId="+slackId+"&slackIntId="+slackIntId+"&userMail="+mailId;
+  	  if(counter==0){
+  	window.open("https://fullintegration-testing.appspot.com/slackConnect.jsp"+redirect_url+"&isNew=true&","oauth","heigth=400px,width=400px");
+  	  }  
+  	$("#load").css("display","block");
+      pagestatus = false;
+      counter++;
+      
+      setTimeout(function(){ checkUserExist(mailId); }, 10000);
+      
+    }
+  },
+  error : function(xhr, status, error) {
+   
+    alert("Inside error fucntion");
+  }
+});
+}
+</script>
+
+</body>
+</html>
