@@ -1,0 +1,6 @@
+/build
+/bin
+/.gradle
+/.gradle/2.13
+.classpath
+
