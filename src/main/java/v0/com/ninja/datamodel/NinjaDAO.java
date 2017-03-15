@@ -27,9 +27,10 @@ public class NinjaDAO {
 		try {
 					
 			Query query = pm.newQuery(Speaker.class,"name =='"+name+"'");
-			logger.info("******** ** wish query "+query);
+			logger.info("******** **  new wish query *********** "+query);
 			List<Speaker> spList = (List<Speaker>) query.execute();
-			
+			logger.info("step list  *********** "+spList);
+
 			spList = (List<Speaker>) pm.detachCopyAll(spList);
 			if(spList != null && spList.size() > 0){
 				speaker =  spList.get(0);

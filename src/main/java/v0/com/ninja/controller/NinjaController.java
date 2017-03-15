@@ -16,6 +16,7 @@ public class NinjaController {
 	
 	@RequestMapping(value = "/getSpeaker/{name}/",method= RequestMethod.GET)
 	public @ResponseBody Map<String,Object> savewish (@PathVariable String name ) {
+		
 		return new NinjaHelper().getSpeaker(name);		
 
 		
